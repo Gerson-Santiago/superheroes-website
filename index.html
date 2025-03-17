@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esquadrão de Super-Heróis</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .hero { border: 1px solid #ddd; padding: 10px; margin: 10px; display: inline-block; width: 250px; }
+    </style>
+</head>
+<body>
+
+    <h1>Esquadrão de Super-Heróis</h1>
+    <div id="heroes"></div>
+
+    <script>
+        async function fetchHeroes() {
+            const url = "https://raw.githubusercontent.com/Gerson-Santiago/superheroes-api/main/heroes.json";
+            
+            try {
+                const response = await fetch(url);
+                const heroes = await response.json();
+                const heroesDiv = document.getElementById("heroes");
+
+                heroes.membros.forEach(hero => {
+                    const heroDiv = document.createElement("div");
+                    heroDiv.classList.add("hero");
+                    heroDiv.innerHTML = `
+                        <h3>${hero.nome}</h3>
+                        <p><strong>Idade:</strong> ${hero.idade}</p>
+                        <p><strong>Identidade Secreta:</strong> ${hero.identidadeSecreta}</p>
+                        <p><strong>Poderes:</strong> ${hero.poderes.join(", ")}</p>
+                    `;
+                    heroesDiv.appendChild(heroDiv);
+                });
+            } catch (error) {
+                console.error("Erro ao buscar os dados:", error);
+            }
+        }
+
+        fetchHeroes();
+    </script>
+
+</body>
+</html>
