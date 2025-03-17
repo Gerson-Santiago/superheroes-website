@@ -7,39 +7,69 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         .hero { border: 1px solid #ddd; padding: 10px; margin: 10px; display: inline-block; width: 250px; }
+        input[type="text"] { padding: 8px; width: 300px; margin-bottom: 20px; }
+        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
     </style>
 </head>
 <body>
 
     <h1>Esquadrão de Super-Heróis</h1>
+
+    <!-- Campo de busca -->
+    <input type="text" id="searchInput" placeholder="Digite o nome do herói...">
+    <button onclick="searchHero()">Buscar Herói</button>
+
+    <!-- Exibição das informações dos heróis -->
     <div id="heroes"></div>
 
     <script>
+        let heroesData = [];
+
         async function fetchHeroes() {
             const url = "https://raw.githubusercontent.com/Gerson-Santiago/superheroes-api/main/heroes.json";
             
             try {
                 const response = await fetch(url);
-                const heroes = await response.json();
-                const heroesDiv = document.getElementById("heroes");
-
-                heroes.membros.forEach(hero => {
-                    const heroDiv = document.createElement("div");
-                    heroDiv.classList.add("hero");
-                    heroDiv.innerHTML = `
-                        <h3>${hero.nome}</h3>
-                        <p><strong>Idade:</strong> ${hero.idade}</p>
-                        <p><strong>Identidade Secreta:</strong> ${hero.identidadeSecreta}</p>
-                        <p><strong>Poderes:</strong> ${hero.poderes.join(", ")}</p>
-                    `;
-                    heroesDiv.appendChild(heroDiv);
-                });
+                const data = await response.json();
+                heroesData = data.membros; // Salva os membros dos heróis para referência posterior
+                displayHeroes(heroesData); // Exibe todos os heróis inicialmente
             } catch (error) {
                 console.error("Erro ao buscar os dados:", error);
             }
         }
 
-        fetchHeroes();
+        function displayHeroes(heroes) {
+            const heroesDiv = document.getElementById("heroes");
+            heroesDiv.innerHTML = ''; // Limpa as informações anteriores
+
+            heroes.forEach(hero => {
+                const heroDiv = document.createElement("div");
+                heroDiv.classList.add("hero");
+                heroDiv.innerHTML = `
+                    <h3>${hero.nome}</h3>
+                    <p><strong>Idade:</strong> ${hero.idade}</p>
+                    <p><strong>Identidade Secreta:</strong> ${hero.identidadeSecreta}</p>
+                    <p><strong>Poderes:</strong> ${hero.poderes.join(", ")}</p>
+                `;
+                heroesDiv.appendChild(heroDiv);
+            });
+        }
+
+        function searchHero() {
+            const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+
+            if (searchTerm) {
+                const filteredHeroes = heroesData.filter(hero => 
+                    hero.nome.toLowerCase().includes(searchTerm)
+                );
+                displayHeroes(filteredHeroes); // Exibe apenas os heróis filtrados
+            } else {
+                displayHeroes(heroesData); // Se a busca estiver vazia, exibe todos os heróis
+            }
+        }
+
+        fetchHeroes(); // Carrega os heróis ao carregar a página
     </script>
 
 </body>
